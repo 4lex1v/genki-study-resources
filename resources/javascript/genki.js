@@ -798,6 +798,7 @@
               '<input '+
                 'class="writing-zone-input" '+
                 'type="text" '+
+                'oninput="Genki.check.validate(this);"'+
                 'data-answer="' + data[0] + '" '+
                 (flag[0] == 'answer' ? 'data-answer2="' + hint + '" ' : '')+
                 (flag[0] == 'answer' && data[3] ? 'data-answer3="' + data[2] + '" ' : '')+
@@ -1745,6 +1746,60 @@
         }
       },
       
+      validate: function (input) {
+          if (input.value.length == 0) {
+              input.classList.remove('invalid');
+              input.classList.remove('valid');
+              return;
+          }
+
+          var correct = false;
+          for (var k in input.dataset) {
+              if (/answer/.test(k) == false) continue;
+
+              var answer = input.dataset[k];
+
+              // check if there's alternative answers in the answer
+              // alternative answers are given as %(alt1/alt2/etc.)
+              if (/%\(.*?\)/.test(answer)) {
+                  var alt = answer.replace(/.*?%\((.*?)\).*/, '$1').split('/');
+
+                  // loop through alternatives
+                  if (k == 'answer' || k == 'answer2') {
+                      while (alt.length) {
+                          if (input.value == answer.replace(/%\(.*?\)/, alt[0])) {
+                              correct = true;
+                              break; // break out if correct answer is found
+                          }
+
+                          alt.splice(0, 1); // remove the checked answer
+                      }
+                  }
+
+                  // search hidden mixed kana/kanji alternatives
+                  else if ((k == 'answer3' || k == 'answer4' || k == 'answer5' || k == 'answer6' || k == 'answer7' || k == 'answer8' || k == 'answer9' || k == 'answer10') && alt.indexOf(input.value) != -1) {
+                      correct = true;
+                  }
+              } 
+
+              // otherwise check the answer normally
+              else if (input.value == answer) {
+                  correct = true;
+              }
+
+              // break out of the loop when a correct answer is found 
+              if (correct) break;
+          }
+
+          if (correct) {
+              input.classList.remove('invalid');
+              input.classList.add('valid');
+          }
+          else {
+              input.classList.remove('valid');
+              input.classList.add('invalid');
+          }
+      },
       
       // check the answers for writing exercises
       // mapEnded means the end of Genki.input.map was reached via Genki.check.value()

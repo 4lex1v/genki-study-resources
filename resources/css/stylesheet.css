@@ -1419,6 +1419,9 @@ input.writing-zone-input::placeholder { color:#BBB; }
 input.writing-zone-input:hover { border-color:#999; }
 input.writing-zone-input:focus { border-color:#F93; }
 
+input.writing-zone-input.valid { border-color:#080 !important; }
+input.writing-zone-input.invalid { border-color:#F00 !important; }
+
 /* custom width */
 .even-width .writing-zone, .even-width .writing-zone-input, .max-width .writing-zone, .max-width .writing-zone-input {
   text-align:left;
